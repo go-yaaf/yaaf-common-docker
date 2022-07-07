@@ -6,7 +6,7 @@ package docker
 
 // DockerContainer is used to construct docker container spec for the docker engine.
 type DockerContainer struct {
-	engine     *DockerEngine
+	client     *DockerClient     // Docker client
 	image      string            // Docker image
 	name       string            // Container name
 	ports      map[string]string // Container ports mapping
@@ -63,5 +63,5 @@ func (c *DockerContainer) AutoRemove(value bool) *DockerContainer {
 
 // Run creates and runs the container, returning the container ID.
 func (c *DockerContainer) Run() (containerID string, err error) {
-	return c.engine.createAndRunContainer(c)
+	return c.client.createAndRunContainer(c)
 }

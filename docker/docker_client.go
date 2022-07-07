@@ -19,28 +19,28 @@ import (
 )
 
 // General File utils
-type DockerEngine struct {
+type DockerClient struct {
 	dockerClient *client.Client
 	ctx          context.Context
 }
 
 // New creates a docker engine client
-func New() (*DockerEngine, error) {
+func NewDockerClient() (*DockerClient, error) {
 	if dc, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation()); err != nil {
 		return nil, err
 	} else {
-		engine := &DockerEngine{
+		cli := &DockerClient{
 			dockerClient: dc,
 			ctx:          context.Background(),
 		}
-		return engine, nil
+		return cli, nil
 	}
 }
 
 // DefineContainer begins defining a docker container via a fluent interface.
-func (c *DockerEngine) CreateContainer(image string) *DockerContainer {
+func (c *DockerClient) CreateContainer(image string) *DockerContainer {
 	return &DockerContainer{
-		engine:     c,
+		client:     c,
 		image:      image,
 		ports:      make(map[string]string),
 		vars:       make(map[string]string),
@@ -50,7 +50,7 @@ func (c *DockerEngine) CreateContainer(image string) *DockerContainer {
 }
 
 // FindContainerByName returns handle to an existing container from its name, or nil if the container was not found.
-func (c *DockerEngine) FindContainerByName(name string) (containerID string, err error) {
+func (c *DockerClient) FindContainerByName(name string) (containerID string, err error) {
 
 	list, err := c.dockerClient.ContainerList(c.ctx, types.ContainerListOptions{All: true})
 	if err != nil {
@@ -67,7 +67,7 @@ func (c *DockerEngine) FindContainerByName(name string) (containerID string, err
 }
 
 // createAndRunContainer creates a new docker container, initialize and runs it
-func (c *DockerEngine) createAndRunContainer(spec *DockerContainer) (containerID string, err error) {
+func (c *DockerClient) createAndRunContainer(spec *DockerContainer) (containerID string, err error) {
 
 	if containerID, err = c.createContainer(spec); err != nil {
 		return
@@ -81,7 +81,7 @@ func (c *DockerEngine) createAndRunContainer(spec *DockerContainer) (containerID
 }
 
 // createContainer creates a new docker container based on the provided spec
-func (c *DockerEngine) createContainer(spec *DockerContainer) (string, error) {
+func (c *DockerClient) createContainer(spec *DockerContainer) (string, error) {
 
 	// verify image exists or pull it from the docker registry
 	if _, err := c.verifyImage(spec.image); err != nil {
@@ -137,7 +137,7 @@ func (c *DockerEngine) createContainer(spec *DockerContainer) (string, error) {
 }
 
 // verifyImage will verify that the docker image name exists or pull it from the docker repository
-func (c *DockerEngine) verifyImage(name string) (bool, error) {
+func (c *DockerClient) verifyImage(name string) (bool, error) {
 
 	// Get list of all existing docker images
 	images, err := c.dockerClient.ImageList(c.ctx, types.ImageListOptions{All: true})
@@ -168,4 +168,27 @@ func (c *DockerEngine) verifyImage(name string) (bool, error) {
 		return false, fmt.Errorf("error pulling image: %s", err)
 	}
 	return false, nil
+}
+
+// RemoveContainer stop, kill and remove the container
+func (c *DockerClient) RemoveContainer(containerID string) error {
+	return c.dockerClient.ContainerRemove(c.ctx, containerID, types.ContainerRemoveOptions{Force: true, RemoveVolumes: true})
+}
+
+// RemoveContainer stop, kill and remove the container
+func (c *DockerClient) GetContainerState(containerID string) (string, error) {
+
+	list, err := c.dockerClient.ContainerList(c.ctx, types.ContainerListOptions{All: true})
+	if err != nil {
+		return "", err
+	}
+
+	// Search container by id
+	for _, item := range list {
+		if item.ID == containerID {
+			return item.State, nil
+		}
+	}
+
+	return "", fmt.Errorf("container %s not found", containerID)
 }
