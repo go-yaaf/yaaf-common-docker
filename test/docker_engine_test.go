@@ -20,7 +20,7 @@ func TestRunContainer(t *testing.T) {
 	// Create container and run it
 	id, err := cli.CreateContainer("busybox:latest").
 		Name("busybox").
-		EntryPoint("/bin/echo", "busybox", "foo").
+		EntryPoint("tail", "-f", "/dev/null").
 		Label("environment", "test").
 		Label("group", "core").
 		Run()

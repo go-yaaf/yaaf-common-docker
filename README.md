@@ -1,9 +1,6 @@
 # yaaf-common-docker
 
 [![Build](https://github.com/mottyc/yaaf-common-docker/actions/workflows/build.yml/badge.svg)](https://github.com/mottyc/yaaf-common-docker/actions/workflows/build.yml)
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/mottyc/yaaf-common-docker)](https://pkg.go.dev/github.com/mottyc/yaaf-common-docker)
-[![Go Report Card](https://goreportcard.com/badge/github.com/mottyc/yaaf-common-docker)](https://goreportcard.com/report/github.com/mottyc/yaaf-common-docker)
-[![codecov](https://codecov.io/gh/mottyc/yaaf-common-docker/branch/master/graph/badge.svg)](https://codecov.io/gh/mottyc/yaaf-common-docker)
 
 A wrapper library of the Go client for the Docker Engine API.
 
