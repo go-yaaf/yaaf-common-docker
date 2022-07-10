@@ -44,12 +44,13 @@ func (c *DockerClient) CreateContainer(image string) *DockerContainer {
 		image:      image,
 		ports:      make(map[string]string),
 		vars:       make(map[string]string),
+		labels:     make(map[string]string),
 		entryPoint: make([]string, 0),
 		autoRemove: true,
 	}
 }
 
-// FindContainerByName returns handle to an existing container from its name, or nil if the container was not found.
+// FindContainerByName returns container ID from its name, or error if the container was not found.
 func (c *DockerClient) FindContainerByName(name string) (containerID string, err error) {
 
 	list, err := c.dockerClient.ContainerList(c.ctx, types.ContainerListOptions{All: true})
@@ -64,6 +65,43 @@ func (c *DockerClient) FindContainerByName(name string) (containerID string, err
 		}
 	}
 	return "", nil
+}
+
+// ListContainersByLabel returns list of containers IDs matching the provided label, and it's value
+func (c *DockerClient) ListContainersByLabel(label, value string) (result []string, err error) {
+
+	list, err := c.dockerClient.ContainerList(c.ctx, types.ContainerListOptions{All: true})
+	if err != nil {
+		return nil, err
+	}
+
+	// Search container by name
+	for _, container := range list {
+		if v, ok := container.Labels[label]; ok {
+			if v == value {
+				result = append(result, container.ID)
+			}
+		}
+
+	}
+	return
+}
+
+// ListContainersByLabel returns list of containers IDs matching the provided state
+func (c *DockerClient) ListContainersByState(state string) (result []string, err error) {
+
+	list, err := c.dockerClient.ContainerList(c.ctx, types.ContainerListOptions{All: true})
+	if err != nil {
+		return nil, err
+	}
+
+	// Search container by name
+	for _, container := range list {
+		if container.State == state {
+			result = append(result, container.ID)
+		}
+	}
+	return
 }
 
 // createAndRunContainer creates a new docker container, initialize and runs it
@@ -93,7 +131,6 @@ func (c *DockerClient) createContainer(spec *DockerContainer) (string, error) {
 		return "", err
 	} else if len(containerID) > 0 {
 		return containerID, fmt.Errorf("container %s is already running (%s)", spec.name, containerID)
-
 	}
 
 	// Set environment variables
@@ -116,8 +153,9 @@ func (c *DockerClient) createContainer(spec *DockerContainer) (string, error) {
 	}
 
 	containerConfig := &docker_types.Config{
-		Image: spec.image,
-		Env:   env,
+		Image:  spec.image,
+		Env:    env,
+		Labels: spec.labels,
 	}
 
 	if len(spec.entryPoint) > 0 {

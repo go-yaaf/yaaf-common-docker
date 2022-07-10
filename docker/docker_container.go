@@ -11,6 +11,7 @@ type DockerContainer struct {
 	name       string            // Container name
 	ports      map[string]string // Container ports mapping
 	vars       map[string]string // Environment variables
+	labels     map[string]string // Container labels
 	entryPoint []string          // Entry point
 	autoRemove bool              // Automatically remove container when stopped (default: true)
 }
@@ -45,6 +46,20 @@ func (c *DockerContainer) Var(key, value string) *DockerContainer {
 func (c *DockerContainer) Vars(vars map[string]string) *DockerContainer {
 	for k, v := range vars {
 		c.vars[k] = v
+	}
+	return c
+}
+
+// Label adds custom label
+func (c *DockerContainer) Label(label, value string) *DockerContainer {
+	c.labels[label] = value
+	return c
+}
+
+// Labels adds multiple labels
+func (c *DockerContainer) Labels(label map[string]string) *DockerContainer {
+	for k, v := range label {
+		c.labels[k] = v
 	}
 	return c
 }
