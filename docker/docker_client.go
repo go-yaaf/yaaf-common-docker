@@ -230,3 +230,8 @@ func (c *DockerClient) GetContainerState(containerID string) (string, error) {
 
 	return "", fmt.Errorf("container %s not found", containerID)
 }
+
+// Close should close the underlying client library instance and free allocated resources
+func (c *DockerClient) Close() error {
+	return c.dockerClient.Close()
+}

@@ -13,12 +13,12 @@ import (
 
 func TestRunContainer(t *testing.T) {
 
-	// Create engine
-	de, err := docker.NewDockerClient()
+	// Create client
+	cli, err := docker.NewDockerClient()
 	assert.Nil(t, err)
 
 	// Create container and run it
-	id, err := de.CreateContainer("busybox:latest").
+	id, err := cli.CreateContainer("busybox:latest").
 		Name("busybox").
 		EntryPoint("/bin/echo", "busybox", "foo").
 		Label("environment", "test").
@@ -26,20 +26,21 @@ func TestRunContainer(t *testing.T) {
 		Run()
 
 	// Check state
-	state, er := de.GetContainerState(id)
+	state, er := cli.GetContainerState(id)
 	assert.Nil(t, er)
 	assert.Equal(t, state, "running")
 
 	// Find by name
-	containerId, err := de.FindContainerByName("busybox")
+	containerId, err := cli.FindContainerByName("busybox")
 	assert.Nil(t, err)
 	assert.Equal(t, containerId, id)
 
 	// List by label
-	list, err := de.ListContainersByLabel("group", "core")
+	list, err := cli.ListContainersByLabel("group", "core")
 	assert.Nil(t, err)
 	assert.Equal(t, 1, len(list))
 
-	err = de.RemoveContainer(containerId)
+	err = cli.RemoveContainer(containerId)
 	assert.Nil(t, err)
+
 }
