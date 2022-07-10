@@ -6,16 +6,14 @@ package docker
 
 import (
 	"fmt"
-	"io"
-	"os"
-
-	"github.com/mottyc/yaaf-common/utils/collections"
-
 	"github.com/docker/docker/api/types"
 	docker_types "github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
+	"github.com/mottyc/yaaf-common/utils/collections"
 	"golang.org/x/net/context"
+	"io"
+	"os"
 )
 
 // General File utils

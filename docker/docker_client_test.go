@@ -2,19 +2,17 @@
 //
 // Docker engine client library tests
 //
-package test
+package docker
 
 import (
-	"testing"
-
-	"github.com/mottyc/yaaf-common-docker/docker"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-func TestRunContainer(t *testing.T) {
+func TestDockerClientRunContainer(t *testing.T) {
 
 	// Create client
-	cli, err := docker.NewDockerClient()
+	cli, err := NewDockerClient()
 	assert.Nil(t, err)
 
 	// Create container and run it
