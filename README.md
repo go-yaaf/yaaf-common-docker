@@ -1,6 +1,6 @@
 # yaaf-common-docker
 
-[![Build](https://github.com/mottyc/yaaf-common-docker/actions/workflows/build.yml/badge.svg)](https://github.com/mottyc/yaaf-common-docker/actions/workflows/build.yml)
+[![Build](https://github.com/go-yaaf/yaaf-common-docker/actions/workflows/build.yml/badge.svg)](https://github.com/go-yaaf/yaaf-common-docker/actions/workflows/build.yml)
 
 A wrapper library of the Go client for the Docker Engine API.
 
@@ -13,7 +13,7 @@ and includes a subset of docker CLI functions to be used for integration tests.
 #### Adding dependency
 
 ```bash
-$ go get -v -t github.com/mottyc/yaaf-common-docker ./...
+$ go get -v -t github.com/go-yaaf/yaaf-common-docker ./...
 ```
 
 ### Library usage
@@ -21,7 +21,7 @@ $ go get -v -t github.com/mottyc/yaaf-common-docker ./...
 package main
 
 import (
-	"github.com/mottyc/yaaf-common-docker/docker"
+	"github.com/go-yaaf/yaaf-common-docker/docker"
 	"log"
 )
 
